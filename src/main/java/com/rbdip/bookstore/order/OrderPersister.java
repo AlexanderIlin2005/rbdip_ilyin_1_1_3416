@@ -27,15 +27,14 @@ public class OrderPersister {
     public Order persist(CreateOrderRequest request, List<Product> products, List<PricingCalculator.LineItem> lineItems) {
         Customer customer = findOrCreateCustomer(request);
         Order order = new Order(customer, "new");
-        order = orderRepository.save(order);
 
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
             int quantity = lineItems.get(i).quantity();
-            orderItemRepository.save(new OrderItem(order.getId(), product, quantity));
+            order.addItem(new OrderItem(product, quantity));
         }
 
-        return order;
+        return orderRepository.save(order);
     }
 
     private Customer findOrCreateCustomer(CreateOrderRequest request) {
